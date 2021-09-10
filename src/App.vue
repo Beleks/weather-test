@@ -1,19 +1,49 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="header">
+      <div class="place"></div>
+      <div class="date"></div>
+    </div>
+    <div class="current_weather"></div>
+    <WeatherForTheDay />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+const axios = require("axios").default;
+import WeatherForTheDay from "./components/WeatherForTheDay.vue";
 
 export default {
-  name: 'App',
+  name: "App",
+  data: () => {
+    return {
+      date: null,
+      time: {
+        hour: null,
+        minutes: null,
+      },
+      weather: null,
+    };
+  },
+  methods: {
+    getCurrentWeatherDay(allDaysArr) {
+      console.log(allDaysArr)
+    },
+  },
   components: {
-    HelloWorld
-  }
-}
+    WeatherForTheDay,
+  },
+  created() {
+    axios
+      .get("https://api.openweathermap.org/data/2.5/forecast?", {
+        params: {
+          q: "tomsk",
+          appid: "27966056cc44b7aa53d432d46ad371ed",
+        },
+      })
+      .then((response) => this.getCurrentWeatherDay(response.data.list));
+  },
+};
 </script>
 
 <style lang="scss">
