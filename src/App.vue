@@ -9,18 +9,32 @@
         <div>{{ date }}</div>
       </div>
     </div>
-    <div class="current_info">
-      <div class="current_info_weather">
-        <div>
-          {{ time.hour }}
-          <span class="colon">:</span>
-          {{ time.minutes | fixMinutes }}
+    <transition name="fade">
+      <div v-if="weather" class="current_info">
+        <div class="current_info_weather">
+          <div>
+            {{ time.hour }}
+            <span class="colon">:</span>
+            {{ time.minutes | fixMinutes }}
+          </div>
+          <div style="display: flex; align-items: center">
+            <div>+{{ weather[0].main.temp | rounding }}</div>
+            <img
+              :src="`http://openweathermap.org/img/wn/${weather[0].weather[0].icon}@2x.png`"
+              alt=""
+            />
+          </div>
+          <!-- `http://openweathermap.org/img/wn/${weather[0].weather[0].icon}@2x.png` -->
         </div>
-        <div v-if="weather">+{{ weather[0].main.temp | rounding }}</div>
+        <div class="greeting">{{ greeting }}</div>
       </div>
-      <div class="greeting">{{ greeting }}</div>
-    </div>
-    <WeatherForTheDay :weather="weather" :interestingNews="interestingNews"/>
+    </transition>
+    <WeatherForTheDay
+      v-if="weather"
+      :weather="weather"
+      :interestingNews="interestingNews"
+      :timeOfDay="timeOfDay"
+    />
   </div>
 </template>
 
@@ -102,8 +116,7 @@ export default {
       let minutes = today.getMinutes();
       let sec = today.getSeconds();
 
-      let time = `${hour}:${minutes}:${sec}`;
-      // console.log(time);
+      // let time = `${hour}:${minutes}:${sec}`;
 
       this.time = {
         hour,
@@ -149,10 +162,10 @@ export default {
     axios
       .get("https://api.nasa.gov/planetary/apod?", {
         params: {
-          api_key: "DEMO_KEY",
+          api_key: "RkmYIIQ4CpAZbfB5J0UmkXenOLNf8wblbeYZPFJh",
         },
       })
-      .then((response) => this.interestingNews = response.data);
+      .then((response) => (this.interestingNews = response.data));
   },
 };
 </script>
@@ -162,6 +175,15 @@ export default {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .morning {
@@ -233,15 +255,16 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #ffffffd4;
   min-height: 100vh;
   padding: 1em;
 }
 .current_info {
-  padding: 0 4em;
+  padding: 0 1em;
   margin-top: 2em;
   .current_info_weather {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     font-size: 2.25rem;
   }
